@@ -1,3 +1,4 @@
+import sys
 from collections.abc import Callable
 from contextlib import redirect_stdout
 from functools import partial
@@ -95,7 +96,11 @@ class Curried:
         args = iter(self.args)
         with redirect_stdout(StringIO()) as doc:
             help(next(args))
-        signature = doc.getvalue().splitlines()[2]
+            print(sys.stdout)
+        print(sys.stdout)
+        signature = doc.getvalue()
+        print(signature)
+        signature = signature.splitlines()[2]
         if len(self.args) > 1:
             signature += "".join([f", {arg!r}" for arg in args])
         if len(self.kwargs) > 1:
