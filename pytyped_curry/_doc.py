@@ -54,9 +54,9 @@ class Curried:
         if "__module__" in vars(self):
             result.__module__ = self.__module__
         if "__name__" in vars(self):
-            result.__name__ = self.__name__
+            result.__name__ = self.args[0].__name__
         if "__qualname__" in vars(self):
-            result.__qualname__ = self.__qualname__
+            result.__qualname__ = self.args[0].__qualname__
         if "__wrapped__" in vars(self):
             result.__wrapped__ = self.__wrapped__
         if (
