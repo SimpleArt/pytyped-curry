@@ -1,13 +1,13 @@
 import sys
-from functools import partial
+import typing
 from typing import Any, Literal, TypeVar, overload
 
 if sys.version_info < (3, 9):
-    from functools import partial as Curry
+    from functools import partial
     from typing import Callable
 else:
     from collections.abc import Callable
-    from ._doc import Curry
+    from ._doc import curry as _curry
 
 RT = TypeVar("RT")
 T1 = TypeVar("T1")
@@ -250,4 +250,6 @@ def curry(n, /, *args):
         >>> reveal_type(add)
         __main__.Add
     '''
-    return Curry(*[partial] * n)
+    if sys.version_info >= (3, 9):
+        return _curry(n)
+    return partial(*[partial] * n)
