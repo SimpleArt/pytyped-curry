@@ -111,7 +111,7 @@ add = curry(3)(add(x: int, y: int, z: int) -> int)
 
 help(add(1))
 """
-Help on partial in module __main__:
+Help on Curried in module __main__:
 
 add(1) = curry(2)(add(x: int, y: int, z: int) -> int, 1)
     Returns add(x)(y)(z) -> x + y + z.
@@ -120,7 +120,7 @@ add(1) = curry(2)(add(x: int, y: int, z: int) -> int, 1)
 
 help(add(1)(2))
 """
-Help on partial in module __main__:
+Help on Curried in module __main__:
 
 add(1, 2) = curry(1)(add(x: int, y: int, z: int) -> int, 1, 2)
     Returns add(x)(y)(z) -> x + y + z.
