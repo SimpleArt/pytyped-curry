@@ -1,7 +1,6 @@
+import pydoc
 from collections.abc import Callable
-from contextlib import redirect_stdout
 from functools import partial
-from io import StringIO
 from typing import Any
 
 
@@ -93,11 +92,7 @@ class Curried:
 
     def __repr__(self) -> str:
         args = iter(self.args)
-        print("<====Starting redirect====>")
-        with redirect_stdout(StringIO()) as doc:
-            help(next(args))
-        print("<====Stopping redirect====>")
-        signature = doc.getvalue().splitlines()[2]
+        signature = pydoc.text.document(next(args)).split("\n", 1)[0]
         if len(self.args) > 1:
             signature += "".join([f", {arg!r}" for arg in args])
         if len(self.kwargs) > 1:
