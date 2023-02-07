@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pytyped-curry"
+dynamic = ["description", "version"]
+
+classifiers = [
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.5",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Topic :: Printing"
+]
+
+keywords = ["pretty", "print", "format", "indent", "dataclass"]
+
+license = {text = "mit"}
+readme = "README.md"
+
+requires-python = ">=3.5"
+
+[project.urls]
+"Bug Tracker" = "https://github.com/SimpleArt/pytyped-curry/issues"
+"Repository" = "https://github.com/SimpleArt/pytyped-curry"
+
+[tool.setuptools.dynamic]
+version = {attr = "pytyped_curry.__version__"}
