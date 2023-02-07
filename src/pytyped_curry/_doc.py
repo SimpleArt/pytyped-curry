@@ -282,9 +282,15 @@ class Curried:
     def __repr__(self) -> str:
         args = iter(self.args)
         signature = pydoc.text.document(next(args)).split("\n", 1)[0]
+        unparenthesized_lambda = signature[0] == "<"
         if len(self.args) > 1:
+            if unparenthesized_lambda:
+                unparenthesized_lambda = False
+                signature = f"({signature})"
             signature += "".join([f", {arg!r}" for arg in args])
         if self.kwargs:
+            if unparenthesized_lambda:
+                signature = f"({signature})"
             signature += "".join([
                 f", {key!r}={value!r}"
                 for key, value in self.kwargs.items()
