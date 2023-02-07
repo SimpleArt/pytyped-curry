@@ -156,7 +156,7 @@ def curry(n, /, *args):
         >>> @curry(3)
         ... def add(x: int, y: int, z: int) -> int:
         ...     """Returns add(x)(y)(z) = x + y + z."""
-        ...     return x + y
+        ...     return x + y + z
         ... 
         >>> help(add)
         Help on Curried in module __main__:
