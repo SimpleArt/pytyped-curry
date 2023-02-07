@@ -282,7 +282,7 @@ class Curried:
         signature = pydoc.text.document(next(args)).split("\n", 1)[0]
         if len(self.args) > 1:
             signature += "".join([f", {arg!r}" for arg in args])
-        if len(self.kwargs) > 1:
+        if self.kwargs:
             signature += "".join([
                 f", {key!r}={value!r}"
                 for key, value in self.kwargs.items()
