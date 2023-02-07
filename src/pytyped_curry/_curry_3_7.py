@@ -36,7 +36,7 @@ def curry(n: int, _: Any = ...) -> Callable[
         5
         >>> add()(2, 3)
         5
-    
+
     For Decorators
     --------------
     Often times writing decorators requires writing several nested functions.
@@ -44,7 +44,7 @@ def curry(n: int, _: Any = ...) -> Callable[
     currying.
 
     Note: `reveal_type` is ran using `mypy`.
-    
+
         >>> T = typing.TypeVar("T")
         >>> RT = typing.TypeVar("RT")
         >>> 
@@ -127,17 +127,17 @@ def curry(n: int, _: Any = ...) -> Callable[
     preserved, the final return type is.
 
     Note: `reveal_type` is ran using `mypy`.
-    
+
         >>> @curry(2)
         ... def add(x: int, y: int) -> int:
         ...     return x + y
         ... 
         >>> reveal_type(add)
         def (*Any, **Any) -> def (*Any, **Any) -> builtins.int
-    
+
     For Python < (3, 11), one can also use `curry(n, ...)` to hint the curried
     function as taking exactly `1` positional argument per call, up to `n = 3`.
-    
+
         >>> @curry(2, ...)
         ... def add(x: int, y: int) -> int:
         ...     return x + y
@@ -149,17 +149,17 @@ def curry(n: int, _: Any = ...) -> Callable[
     function as taking exactly `1` positional argument per call, up to `n = 3`,
     except for the last call. Notice that the `y` parameter is preserved as a
     positional-or-keyword parameter.
-    
+
         >>> @curry(2, ...)
         ... def add(x: int, y: int) -> int:
         ...     return x + y
         ... 
         >>> reveal_type(add)
         def (builtins.int) -> def (y: builtins.int) -> builtins.int
-    
+
     For more precise hinting, one must use `typing.cast` around the currying
     function.
-    
+
         >>> class Add(typing.Protocol):
         ...     @typing.overload
         ...     def __call__(self, x: int, y: int) -> AddEmpty:
