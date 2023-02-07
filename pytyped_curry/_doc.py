@@ -1,6 +1,5 @@
 import pydoc
 from collections.abc import Callable
-from functools import partial
 from typing import Any
 
 
@@ -44,10 +43,12 @@ class Curried:
 
     def __call__(self, *args: Any, **kwargs: Any) -> Any:
         if self.n == 1:
-            return partial(*[partial] * self.n)(
-                *self.args, **self.kwargs
-            )(*args, **kwargs)
-        result = type(self)(self.n - 1, *self.args, *args, **self.kwargs, **kwargs)
+            return self.args[0](
+                *self.args[1:], *args, **self.kwargs, **kwargs
+            )
+        result = type(self)(
+            self.n - 1, *self.args, *args, **self.kwargs, **kwargs
+        )
         if "__annotations__" in vars(self):
             result.__annotations__ = self.__annotations__
         result.__doc__ = self.__doc__
