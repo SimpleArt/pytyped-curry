@@ -209,19 +209,19 @@ class Add(Protocol):
         ...
 
 
-class AddEmpty(typing.Protocol):
+class AddEmpty(Protocol):
 
     def __call__(self) -> int:
         ...
 
 
-class AddX(typing.Protocol):
+class AddX(Protocol):
 
     def __call__(self, x: int) -> int:
         ...
 
 
-class AddY(typing.Protocol):
+class AddY(Protocol):
 
     def __call__(self, y: int) -> int:
         ...
