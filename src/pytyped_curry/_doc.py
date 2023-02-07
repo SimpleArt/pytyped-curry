@@ -203,6 +203,8 @@ class curry:
         if hasattr(func, "__annotations__"):
             result.__annotations__ = func.__annotations__
         result.__doc__ = getattr(func, "__doc__", None)
+        if result.__doc__ is None or result.__doc__.strip() == "":
+            result.__doc__ = "Anonymous curried function."
         if hasattr(func, "__module__"):
             result.__module__ = func.__module__
         if hasattr(func, "__name__"):
