@@ -13,6 +13,8 @@ class Curry:
     def __call__(
         self, func: Callable[..., Any], /, *args: Any, **kwargs: Any
     ) -> Callable[..., Any]:
+        if not callable(func):
+            raise TypeError("the first argument must be callable")
         result = Curried(self.n, func, *args, **kwargs)
         if hasattr(func, "__annotations__"):
             result.__annotations__ = func.__annotations__
