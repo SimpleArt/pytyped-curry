@@ -1,10 +1,11 @@
 import sys
+import typing
 from collections.abc import Callable
 from functools import partial
 from typing import Any, Concatenate, Literal, NoReturn, ParamSpec
 from typing import TypeVar, overload
 
-from ._doc import Curry
+from ._doc import curry as _curry
 
 P = ParamSpec("P")
 RT = TypeVar("RT")
@@ -255,4 +256,4 @@ def curry(n, /, *args):
         >>> reveal_type(add)
         __main__.Add
     '''
-    return Curry(*[partial] * n)
+    return _curry(n)
