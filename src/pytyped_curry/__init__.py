@@ -185,3 +185,5 @@ function.
     __main__.Add
 '''
 from ._curry import curry
+
+__version__ = "1.0.0"
