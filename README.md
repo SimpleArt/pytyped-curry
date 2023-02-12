@@ -191,24 +191,6 @@ function.
 from typing import Protocol, overload
 
 
-class Add(Protocol):
-
-    @typing.overload
-    def __call__(self, x: int, y: int) -> AddEmpty:
-        ...
-
-    @typing.overload
-    def __call__(self, x: int) -> AddY:
-        ...
-
-    @typing.overload
-    def __call__(self, *, y: int) -> AddX:
-        ...
-
-    def __call__(self, x, y):
-        ...
-
-
 class AddEmpty(Protocol):
 
     def __call__(self) -> int:
@@ -224,6 +206,24 @@ class AddX(Protocol):
 class AddY(Protocol):
 
     def __call__(self, y: int) -> int:
+        ...
+
+
+class Add(Protocol):
+
+    @typing.overload
+    def __call__(self, x: int, y: int) -> AddEmpty:
+        ...
+
+    @typing.overload
+    def __call__(self, x: int) -> AddY:
+        ...
+
+    @typing.overload
+    def __call__(self, *, y: int) -> AddX:
+        ...
+
+    def __call__(self, x, y):
         ...
 
 
