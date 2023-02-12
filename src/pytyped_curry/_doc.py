@@ -1,7 +1,16 @@
 import pydoc
+import sys
 from collections.abc import Callable
 from dataclasses import dataclass
+from types import FunctionType, MethodType
 from typing import Any
+
+if sys.version_info < (3, 9):
+    from typing import Dict, List
+else:
+    from builtins import dict as Dict, list as List
+
+contexts: List[Dict[str, Any]] = []
 
 
 @dataclass(unsafe_hash=True, frozen=True)
@@ -223,11 +232,13 @@ class Curried:
     n: int
     args: tuple[Any, ...]
     kwargs: dict[str, Any]
+    _wrapped_index: int
 
     def __init__(self, n: int, *args: Any, **kwargs: Any) -> None:
         self.n = n
         self.args = args
         self.kwargs = kwargs
+        self._wrapped_index = 0
 
     def __call__(self, *args: Any, **kwargs: Any) -> Any:
         if self.n == 1:
@@ -237,21 +248,51 @@ class Curried:
         result = type(self)(
             self.n - 1, *self.args, *args, **self.kwargs, **kwargs
         )
-        if "__annotations__" in vars(self):
+        is_decorator = len(contexts) > 0
+        is_decorator &= len(args) == 1
+        is_decorator &= len(kwargs) == 0
+        is_decorator &= callable(args[0])
+        if is_decorator:
+            func = args[0]
+            result._wrapped_index = len(self.args)
+        if is_decorator and isinstance(contexts[-1].get("annotations"), dict):
+            result.__annotations__ = contexts[-1]["annotations"]
+        elif is_decorator and hasattr(func, "__annotations__"):
+            result.__annotations__ = func.__annotations__
+        elif "__annotations__" in vars(self):
             result.__annotations__ = self.__annotations__
-        result.__doc__ = self.__doc__
-        if "__module__" in vars(self):
+        if is_decorator and isinstance(contexts[-1].get("doc"), str):
+            result.__doc__ = contexts[-1]["doc"]
+        elif is_decorator and hasattr(func, "__doc__"):
+            result.__doc__ = func.__doc__
+        else:
+            result.__doc__ = self.__doc__
+        if is_decorator and isinstance(contexts[-1].get("module"), str):
+            result.__module__ = contexts[-1]["module"]
+        elif is_decorator and hasattr(func, "__module__"):
+            result.__module__ = func.__module__
+        elif "__module__" in vars(self):
             result.__module__ = self.__module__
-        if "__name__" in vars(self):
+        result.__wrapped__ = func if is_decorator else self
+        if is_decorator and isinstance(contexts[-1].get("name"), str):
+            result.__name__ = contexts[-1]["name"]
+        elif is_decorator and hasattr(func, "__name__"):
+            result.__name__ = func.__name__
+        elif "__name__" in vars(self):
             result.__name__ = self.args[0].__name__
-        if "__qualname__" in vars(self):
+        if is_decorator and isinstance(contexts[-1].get("qualname"), str):
+            result.__qualname__ = contexts[-1]["qualname"]
+        elif is_decorator and isinstance(contexts[-1].get("name"), str):
+            result.__qualname__ = result.__module__ + "." + contexts[-1]["name"]
+        elif is_decorator and hasattr(func, "__qualname__"):
+            result.__qualname__ = func.__qualname__
+        elif "__qualname__" in vars(self):
             result.__qualname__ = self.args[0].__qualname__
-        if "__wrapped__" in vars(self):
-            result.__wrapped__ = self.__wrapped__
         if (
             len(self.args) + len(self.kwargs) + len(args) + len(kwargs) == 1
-            or "__name__" not in vars(self)
-                and "__qualname__" not in vars(self)
+            or "__name__" not in vars(result)
+                and "__qualname__" not in vars(result)
+            or is_decorator
         ):
             return result
         elif len(self.args) + len(args) > 1:
@@ -273,26 +314,44 @@ class Curried:
                 for key, value in k.items()
             ])
         params = f"({params})"
-        if "__name__" in vars(self):
+        if (
+            is_decorator and hasattr(func, "__name__")
+            or "__name__" in vars(self)
+        ):
             result.__name__ += params
-        if "__qualname__" in vars(self):
+        if (
+            is_decorator and hasattr(func, "__qualname__")
+            or "__qualname__" in vars(self)
+        ):
             result.__qualname__ += params
         return result
 
     def __repr__(self) -> str:
-        args = iter(self.args)
-        signature = pydoc.text.document(next(args)).split("\n", 1)[0]
-        unparenthesized_lambda = signature[0] == "<"
-        if len(self.args) > 1:
-            if unparenthesized_lambda:
-                unparenthesized_lambda = False
-                signature = f"({signature})"
-            signature += "".join([f", {arg!r}" for arg in args])
+        if len(self.args) == 1 and len(self.kwargs) == 0:
+            r = as_repr(self.args[0], is_annotated=True)
+            return f"curry({self.n})({r})"
+        signature = ", ".join([
+                as_repr(arg, i == self._wrapped_index)
+                for i, arg in enumerate(self.args)
+            ])
         if self.kwargs:
-            if unparenthesized_lambda:
-                signature = f"({signature})"
-            signature += "".join([
-                f", {key!r}={value!r}"
+            signature += ", "
+            signature += ", ".join([
+                f"{key}={as_repr(value)}"
                 for key, value in self.kwargs.items()
             ])
         return f"curry({self.n})({signature})"
+
+
+def as_repr(x: Any, is_annotated: bool) -> str:
+    if not isinstance(x, (FunctionType, MethodType)):
+        return repr(x)
+    elif not is_annotated:
+        if isinstance(x, MethodType):
+            return f"{x.__self__!r}.{x.__name__}"
+        elif x.__module__ == "__main__":
+            return x.__name__ or "<lambda>"
+        else:
+            return x.__qualname__ or "<lambda>"
+    result = pydoc.text.document(x).split("\n", 1)[0]
+    return result

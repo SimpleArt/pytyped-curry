@@ -184,6 +184,6 @@ function.
     >>> reveal_type(add)
     __main__.Add
 '''
-from ._curry import curry
+from ._curry import *
 
 __version__ = "1.0.2"
