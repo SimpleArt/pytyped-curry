@@ -6,6 +6,13 @@ the function callable multiple times before the function is actually
 ran. Use `curry(n)(func)` or `@curry(n)` to transform a function into
 a curried function which takes `n` calls before running.
 
+## Imports
+
+```python
+from pytyped_curry import curry
+from pytyped_curry import decorator  # python >= 3.9
+```
+
 ## Example
 
 ```python
